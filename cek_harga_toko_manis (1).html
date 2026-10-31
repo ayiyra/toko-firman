@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Harga Toko Manis 🐻</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        choco: {
+                            50: '#FFFDF9',
+                            100: '#FFF8EA',
+                            200: '#F5E8C7',
+                            300: '#E8D5C4',
+                            400: '#D0B8A8',
+                            500: '#B88E75',
+                            600: '#8D493A',
+                            700: '#70392C',
+                            800: '#5C3D2E',
+                            900: '#3D281E',
+                        },
+                        caramel: '#E0A96D',
+                        cream: '#F7F1E5'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFF8EA;
+            color: #5C3D2E;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF8EA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D0B8A8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8D493A;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-12 selection:bg-choco-300 selection:text-choco-900">
+
+    <!-- HEADER / BANNER -->
+    <header class="bg-gradient-to-r from-choco-800 via-choco-700 to-choco-800 text-white shadow-lg sticky top-0 z-30 border-b-4 border-choco-400">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Mascot Bear Icon -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-choco-200 rounded-full flex items-center justify-center text-2xl sm:text-3xl shadow-inner border-2 border-choco-300 transform hover:rotate-6 transition-transform cursor-pointer" onclick="triggerMascotQuote()">
+                    🐻
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold font-fredoka tracking-wide flex items-center gap-2">
+                        Toko Manis <span class="bg-choco-600 text-choco-100 text-xs font-sans px-2.5 py-0.5 rounded-full border border-choco-400">Cek Harga</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-choco-200 font-medium">Tempat cek & kelola harga termudah ✨</p>
+                </div>
+            </div>
+
+            <button onclick="openModal('addModal')" class="bg-choco-300 hover:bg-choco-200 text-choco-900 font-fredoka px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-md font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95 border border-choco-400">
+                <i class="fa-solid font-bold fa-plus"></i>
+                <span>Tambah Barang</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MASCOT DIALOG / NOTIFICATION -->
+    <div id="mascotBubble" class="max-w-5xl mx-auto px-4 mt-4 hidden">
+        <div class="bg-choco-200 border-2 border-choco-400 rounded-2xl p-3 text-choco-900 text-sm font-medium flex items-center justify-between shadow-sm animate-bounce">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🐾</span>
+                <span id="mascotText">Halo! Mau cari barang apa hari ini? Ketik di pencarian ya!</span>
+            </div>
+            <button onclick="closeMascotBubble()" class="text-choco-600 hover:text-choco-900 font-bold px-2">✕</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 mt-6 flex-1 w-full">
+
+        <!-- TAB NAVIGATION -->
+        <div class="flex border-b-2 border-choco-200 mb-6 gap-2 overflow-x-auto pb-1">
+            <button id="tabItemsBtn" onclick="switchTab('items')" class="px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-choco-300 bg-choco-800 text-white shadow-sm flex items-center gap-2">
+                <span>🏷️ Cek & Edit Harga</span>
+                <span id="tabBadgeItems" class="bg-choco-600 text-choco-100 text-[11px] px-2 py-0.5 rounded-full">0</span>
+            </button>
+            <button id="tabRestockBtn" onclick="switchTab('restock')" class="px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-transparent text-choco-700 hover:bg-choco-200/50 flex items-center gap-2">
+                <span>⚠️ Stok Menipis / Restock</span>
+                <span id="tabBadgeRestock" class="bg-amber-500 text-white text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+            <button id="tabDebtBtn" onclick="switchTab('debt')" class="px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-transparent text-choco-700 hover:bg-choco-200/50 flex items-center gap-2">
+                <span>📖 Catatan Hutang & Titipan</span>
+                <span id="tabBadgeDebt" class="bg-red-500 text-white text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+            </button>
+        </div>
+
+        <!-- SECTION 1: ITEMS & PRICES -->
+        <div id="sectionItems" class="space-y-6">
+            <!-- SEARCH AND FILTER BAR -->
+            <div class="bg-white p-4 sm:p-5 rounded-3xl shadow-sm border-2 border-choco-200 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- Search Input -->
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-choco-400"></i>
+                        <input type="text" id="searchInput" oninput="filterItems()" placeholder="Cari nama barang (misal: Pocari, Surya, Ultramilk)..." 
+                               class="w-full pl-11 pr-10 py-3 bg-choco-100/50 border-2 border-choco-200 rounded-2xl text-choco-900 placeholder-choco-400 focus:outline-none focus:border-choco-600 focus:bg-white transition text-sm">
+                        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-choco-400 hover:text-choco-700 w-6 h-6 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="w-full sm:w-48">
+                        <select id="categoryFilter" onchange="filterItems()" class="w-full py-3 px-4 bg-choco-100/50 border-2 border-choco-200 rounded-2xl text-choco-900 font-medium focus:outline-none focus:border-choco-600 focus:bg-white transition text-sm cursor-pointer">
+                            <option value="ALL">Semua Kategori</option>
+                            <option value="Minuman">🧃 Minuman</option>
+                            <option value="Kopi & Sachet">☕ Kopi & Sachet</option>
+                            <option value="Makanan & Bumbu">🍜 Makanan & Bumbu</option>
+                            <option value="Rokok">🚬 Rokok</option>
+                            <option value="Lainnya">📦 Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Stats Bar & Reset Options -->
+                <div class="flex flex-wrap items-center justify-between text-xs text-choco-600 pt-2 border-t border-choco-100 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-choco-200 px-2.5 py-1 rounded-full font-bold text-choco-800" id="itemCount">0 Barang</span>
+                        <span id="filterStatus" class="italic text-choco-500"></span>
+                    </div>
+                    <button onclick="confirmResetData()" class="text-choco-500 hover:text-red-600 transition flex items-center gap-1 underline font-medium">
+                        <i class="fa-solid fa-rotate-left"></i> Reset ke Data Awal
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRODUCT GRID -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Items rendered dynamically via JS -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="hidden text-center py-12 bg-white rounded-3xl border-2 border-dashed border-choco-300 p-6">
+                <div class="text-5xl mb-3">🔍🐻</div>
+                <h3 class="text-lg font-bold font-fredoka text-choco-800 mb-1">Barang tidak ditemukan</h3>
+                <p class="text-sm text-choco-500 max-w-xs mx-auto">Coba periksa kata kunci pencarian kamu atau tambah barang baru jika belum ada.</p>
+                <button onclick="openModal('addModal')" class="mt-4 bg-choco-600 hover:bg-choco-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
+                    + Tambah Barang Ini
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: RESTOCK / STOK MENIPIS -->
+        <div id="sectionRestock" class="hidden space-y-4">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-5 rounded-3xl shadow-sm border-2 border-amber-400 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">🚨</div>
+                    <div>
+                        <h2 class="text-lg font-bold font-fredoka">Daftar Barang Perlu Restock</h2>
+                        <p class="text-xs text-amber-100">Barang dengan stok menipis atau habis yang perlu segera dibeli.</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 px-4 py-2 rounded-2xl text-center border border-white/30 self-stretch sm:self-auto">
+                    <div class="text-2xl font-bold font-fredoka" id="restockTotalCount">0</div>
+                    <div class="text-[10px] uppercase font-bold tracking-wider">Item Perlu Restock</div>
+                </div>
+            </div>
+
+            <div id="restockListGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Restock items rendered dynamically -->
+            </div>
+
+            <div id="emptyRestockState" class="hidden text-center py-12 bg-white rounded-3xl border-2 border-dashed border-choco-300 p-6">
+                <div class="text-5xl mb-3">🎉🐻</div>
+                <h3 class="text-lg font-bold font-fredoka text-choco-800 mb-1">Semua Stok Safe / Aman!</h3>
+                <p class="text-sm text-choco-500 max-w-xs mx-auto">Tidak ada barang dengan status menipis atau habis saat ini.</p>
+            </div>
+        </div>
+
+        <!-- SECTION 3: DEBT & TITIPAN UANG -->
+        <div id="sectionDebt" class="hidden space-y-6">
+
+            <!-- SUMMARY CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Total Hutang Card -->
+                <div class="bg-white border-2 border-red-200 p-4 rounded-3xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-red-500 uppercase tracking-wider">Total Hutang Belum Lunas</p>
+                        <h3 class="text-xl font-bold font-fredoka text-red-700 mt-1" id="summaryTotalDebt">Rp 0</h3>
+                        <p class="text-[11px] text-choco-400 mt-0.5" id="summaryUnpaidCount">0 orang belum bayar</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl">
+                        💸
+                    </div>
+                </div>
+
+                <!-- Total Titipan Card -->
+                <div class="bg-white border-2 border-emerald-200 p-4 rounded-3xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Total Uang Titipan / Kembalian</p>
+                        <h3 class="text-xl font-bold font-fredoka text-emerald-700 mt-1" id="summaryTotalDeposit">Rp 0</h3>
+                        <p class="text-[11px] text-choco-400 mt-0.5" id="summaryDepositCount">0 orang punya titipan</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                        💰
+                    </div>
+                </div>
+
+                <!-- Net Rekap Card -->
+                <div class="bg-choco-800 text-white border-2 border-choco-900 p-4 rounded-3xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-choco-200 uppercase tracking-wider">Selisih / Rekapitulasi Kas</p>
+                        <h3 class="text-xl font-bold font-fredoka text-amber-300 mt-1" id="summaryNetBalance">Rp 0</h3>
+                        <p class="text-[11px] text-choco-300 mt-0.5">(Titipan - Hutang Unpaid)</p>
+                    </div>
+                    <div class="w-12 h-12 bg-choco-700 text-amber-300 rounded-2xl flex items-center justify-center text-xl">
+                        ⚖️
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION & SEARCH FOR DEBT/TITIPAN -->
+            <div class="bg-white p-4 rounded-3xl border-2 border-choco-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="openModal('addRecordModal')" class="w-full sm:w-auto bg-choco-700 hover:bg-choco-800 text-white font-fredoka px-4 py-2.5 rounded-2xl shadow font-semibold text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Catatan Baru
+                    </button>
+                </div>
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-choco-400 text-xs"></i>
+                    <input type="text" id="debtSearchInput" oninput="renderDebtRecords()" placeholder="Cari nama orang..." class="w-full pl-9 pr-3 py-2 bg-choco-100/50 border border-choco-300 rounded-xl text-xs focus:outline-none focus:border-choco-600">
+                </div>
+            </div>
+
+            <!-- RECORD LIST TABLE/CARDS -->
+            <div class="bg-white border-2 border-choco-200 rounded-3xl overflow-hidden shadow-sm">
+                <div class="p-4 bg-choco-100/60 border-b border-choco-200 flex items-center justify-between">
+                    <h3 class="font-fredoka font-bold text-choco-800 text-sm">Daftar Catatan Kasbon & Titipan</h3>
+                    <div class="flex gap-1 text-xs">
+                        <button onclick="setDebtFilter('ALL')" id="debtFilterAll" class="px-3 py-1 rounded-xl bg-choco-700 text-white font-bold">Semua</button>
+                        <button onclick="setDebtFilter('HUTANG')" id="debtFilterHutang" class="px-3 py-1 rounded-xl bg-choco-200 text-choco-800 font-bold">Hutang</button>
+                        <button onclick="setDebtFilter('TITIPAN')" id="debtFilterTitipan" class="px-3 py-1 rounded-xl bg-choco-200 text-choco-800 font-bold">Titipan</button>
+                    </div>
+                </div>
+
+                <div id="debtRecordList" class="divide-y divide-choco-100">
+                    <!-- Records rendered dynamically -->
+                </div>
+
+                <div id="emptyDebtState" class="hidden text-center py-10 p-4">
+                    <div class="text-4xl mb-2">📋🐻</div>
+                    <p class="text-sm font-bold text-choco-800">Belum ada catatan hutang / titipan.</p>
+                    <p class="text-xs text-choco-500 mt-0.5">Klik tombol "+ Tambah Catatan Baru" untuk membuat catatan.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <!-- MODAL EDIT HARGA & ITEM -->
+    <div id="editModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white border-2 border-choco-300 rounded-3xl w-full max-w-md p-6 shadow-2xl transform transition-all">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-choco-100">
+                <h3 class="text-lg font-bold font-fredoka text-choco-800 flex items-center gap-2">
+                    ✏️ Edit Barang
+                </h3>
+                <button onclick="closeModal('editModal')" class="text-choco-400 hover:text-choco-700 text-lg">✕</button>
+            </div>
+
+            <form id="editForm" onsubmit="saveEdit(event)" class="space-y-4">
+                <input type="hidden" id="editId">
+                
+                <div>
+                    <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Nama Barang</label>
+                    <input type="text" id="editName" required class="w-full px-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Kategori</label>
+                        <select id="editCategory" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                            <option value="Minuman">🧃 Minuman</option>
+                            <option value="Kopi & Sachet">☕ Kopi & Sachet</option>
+                            <option value="Makanan & Bumbu">🍜 Makanan & Bumbu</option>
+                            <option value="Rokok">🚬 Rokok</option>
+                            <option value="Lainnya">📦 Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Status Stok</label>
+                        <select id="editStockStatus" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                            <option value="AMAN">🟢 Aman</option>
+                            <option value="MENIPIS">⚠️ Menipis</option>
+                            <option value="HABIS">❌ Habis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Harga (Rp)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-choco-500">Rp</span>
+                            <input type="number" id="editPrice" min="0" step="100" placeholder="0" class="w-full pl-9 pr-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Jumlah Stok</label>
+                        <input type="number" id="editStockQty" min="0" placeholder="Jumlah" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('editModal')" class="flex-1 py-2.5 border-2 border-choco-200 text-choco-700 font-bold rounded-xl text-xs hover:bg-choco-100 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-choco-700 text-white font-bold rounded-xl text-xs hover:bg-choco-800 transition shadow">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH BARANG -->
+    <div id="addModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white border-2 border-choco-300 rounded-3xl w-full max-w-md p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-choco-100">
+                <h3 class="text-lg font-bold font-fredoka text-choco-800 flex items-center gap-2">
+                    ➕ Tambah Barang Baru
+                </h3>
+                <button onclick="closeModal('addModal')" class="text-choco-400 hover:text-choco-700 text-lg">✕</button>
+            </div>
+
+            <form id="addForm" onsubmit="addNewItem(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Nama Barang</label>
+                    <input type="text" id="addName" required placeholder="Contoh: Teh Botol Sosro" class="w-full px-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Kategori</label>
+                        <select id="addCategory" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                            <option value="Minuman">🧃 Minuman</option>
+                            <option value="Kopi & Sachet">☕ Kopi & Sachet</option>
+                            <option value="Makanan & Bumbu">🍜 Makanan & Bumbu</option>
+                            <option value="Rokok">🚬 Rokok</option>
+                            <option value="Lainnya">📦 Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Status Stok Initial</label>
+                        <select id="addStockStatus" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                            <option value="AMAN">🟢 Aman</option>
+                            <option value="MENIPIS">⚠️ Menipis</option>
+                            <option value="HABIS">❌ Habis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Harga (Rp)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-choco-500">Rp</span>
+                            <input type="number" id="addPrice" min="0" step="100" placeholder="0" class="w-full pl-9 pr-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Jumlah Stok</label>
+                        <input type="number" id="addStockQty" min="0" value="10" class="w-full px-3 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('addModal')" class="flex-1 py-2.5 border-2 border-choco-200 text-choco-700 font-bold rounded-xl text-xs hover:bg-choco-100 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-choco-700 text-white font-bold rounded-xl text-xs hover:bg-choco-800 transition shadow">Tambah Barang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH RECORD HUTANG / TITIPAN -->
+    <div id="addRecordModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white border-2 border-choco-300 rounded-3xl w-full max-w-md p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-choco-100">
+                <h3 class="text-lg font-bold font-fredoka text-choco-800 flex items-center gap-2">
+                    📝 Catatan Hutang / Titipan Baru
+                </h3>
+                <button onclick="closeModal('addRecordModal')" class="text-choco-400 hover:text-choco-700 text-lg">✕</button>
+            </div>
+
+            <form id="recordForm" onsubmit="addDebtRecord(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Jenis Catatan</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="border-2 border-red-200 p-2.5 rounded-xl flex items-center justify-center gap-2 cursor-pointer font-bold text-xs text-red-700 has-[:checked]:bg-red-500 has-[:checked]:text-white has-[:checked]:border-red-600 transition">
+                            <input type="radio" name="recordType" value="HUTANG" checked class="hidden">
+                            <span>💸 Hutang Orang</span>
+                        </label>
+                        <label class="border-2 border-emerald-200 p-2.5 rounded-xl flex items-center justify-center gap-2 cursor-pointer font-bold text-xs text-emerald-700 has-[:checked]:bg-emerald-600 has-[:checked]:text-white has-[:checked]:border-emerald-700 transition">
+                            <input type="radio" name="recordType" value="TITIPAN" class="hidden">
+                            <span>💰 Uang Titipan / Kembalian</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Nama Orang (Yang Berhutang/Titip)</label>
+                        <input type="text" id="recordName" required placeholder="Contoh: Pak Budi" class="w-full px-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Dicatat Oleh (Kasir/Penulis)</label>
+                        <input type="text" id="recordAuthor" placeholder="Contoh: Maya / Saya" class="w-full px-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Catatan Barang / Keterangan</label>
+                    <input type="text" id="recordNote" placeholder="Contoh: Rokok Surya 16 + Aqua" class="w-full px-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-choco-700 uppercase mb-1">Nominal (Bebas diisi/Opsional)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-choco-500">Rp</span>
+                        <input type="text" id="recordAmount" placeholder="Contoh: 15000 atau Belum pasti" class="w-full pl-10 pr-3.5 py-2.5 border-2 border-choco-200 rounded-xl text-sm focus:outline-none focus:border-choco-600 font-semibold">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('addRecordModal')" class="flex-1 py-2.5 border-2 border-choco-200 text-choco-700 font-bold rounded-xl text-xs hover:bg-choco-100 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-choco-700 text-white font-bold rounded-xl text-xs hover:bg-choco-800 transition shadow">Simpan Catatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION DELETE -->
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Initial Default Data List (with Stock Status)
+        const DEFAULT_ITEMS = [
+            { id: '1', name: 'Frutti', price: 5000, category: 'Minuman', icon: '🧃', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '2', name: 'Teh Pucuk', price: 3500, category: 'Minuman', icon: '🍵', stockStatus: 'AMAN', stockQty: 24 },
+            { id: '3', name: 'Floridina', price: 3000, category: 'Minuman', icon: '🍊', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '4', name: 'Milku', price: 3500, category: 'Minuman', icon: '🥛', stockStatus: 'AMAN', stockQty: 15 },
+            { id: '5', name: 'Nutriboost', price: 7000, category: 'Minuman', icon: '🥛', stockStatus: 'MENIPIS', stockQty: 2 },
+            { id: '6', name: 'Bear Brand', price: 11000, category: 'Minuman', icon: '🥛', stockStatus: 'AMAN', stockQty: 8 },
+            { id: '7', name: 'Good Day Botol', price: 8000, category: 'Minuman', icon: '☕', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '8', name: 'Adem Sari Botol', price: 7500, category: 'Minuman', icon: '🍹', stockStatus: 'AMAN', stockQty: 6 },
+            { id: '9', name: 'Pristine', price: 3000, category: 'Minuman', icon: '💧', stockStatus: 'AMAN', stockQty: 20 },
+            { id: '10', name: 'Pocari Sweat', price: 8000, category: 'Minuman', icon: '⚡', stockStatus: 'MENIPIS', stockQty: 3 },
+            { id: '11', name: 'Larutan Kaki Tiga', price: 8000, category: 'Minuman', icon: '🥫', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '12', name: 'ABC Kopi Botol', price: 4000, category: 'Minuman', icon: '☕', stockStatus: 'AMAN', stockQty: 15 },
+            { id: '13', name: 'Milku / Nibu', price: 3500, category: 'Minuman', icon: '🧃', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '14', name: 'C1000 / Ceribu', price: 8500, category: 'Minuman', icon: '🍋', stockStatus: 'AMAN', stockQty: 5 },
+            { id: '15', name: 'Mie Sedaap Cup', price: 6000, category: 'Makanan & Bumbu', icon: '🍜', stockStatus: 'AMAN', stockQty: 18 },
+            { id: '16', name: 'Nipis Madu', price: 5000, category: 'Minuman', icon: '🍋', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '17', name: 'Teh Botol Kotak', price: 5000, category: 'Minuman', icon: '🧃', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '18', name: 'Tebs', price: 5000, category: 'Minuman', icon: '🥤', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '19', name: 'Ultramilk Kecil', price: 4000, category: 'Minuman', icon: '🥛', stockStatus: 'AMAN', stockQty: 15 },
+            { id: '20', name: 'Ultramilk 200ml', price: 5000, category: 'Minuman', icon: '🥛', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '21', name: 'Ultramilk 250ml', price: 7500, category: 'Minuman', icon: '🥛', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '22', name: 'Torabika Susu Sachet', price: 2000, category: 'Kopi & Sachet', icon: '☕', stockStatus: 'AMAN', stockQty: 30 },
+            { id: '23', name: 'Top Coffee Kopi Gula Sachet', price: 2000, category: 'Kopi & Sachet', icon: '☕', stockStatus: 'AMAN', stockQty: 30 },
+            { id: '24', name: 'Kapal Api Kecil Sachet', price: 3000, category: 'Kopi & Sachet', icon: '☕', stockStatus: 'AMAN', stockQty: 25 },
+            { id: '25', name: 'Top Coffee Energen Sachet', price: 2000, category: 'Kopi & Sachet', icon: '🌾', stockStatus: 'AMAN', stockQty: 20 },
+            { id: '26', name: 'Top Coffee Alpukat Sachet', price: 2000, category: 'Kopi & Sachet', icon: '🥑', stockStatus: 'AMAN', stockQty: 15 },
+            { id: '27', name: 'Good Day Latte Sachet', price: 2000, category: 'Kopi & Sachet', icon: '☕', stockStatus: 'AMAN', stockQty: 20 },
+            { id: '28', name: 'Adem Sari Sachet', price: 2000, category: 'Kopi & Sachet', icon: '🌿', stockStatus: 'AMAN', stockQty: 15 },
+            { id: '29', name: 'Desaku Bumbu', price: 1000, category: 'Makanan & Bumbu', icon: '🌶️', stockStatus: 'AMAN', stockQty: 40 },
+            { id: '30', name: 'Masako', price: 500, category: 'Makanan & Bumbu', icon: '🧂', stockStatus: 'AMAN', stockQty: 50 },
+            { id: '31', name: 'Kunyit Bubuk Desaku', price: 1500, category: 'Makanan & Bumbu', icon: '🟡', stockStatus: 'AMAN', stockQty: 30 },
+            { id: '32', name: 'Ketumbar / Pencampur Bubuk', price: 1500, category: 'Makanan & Bumbu', icon: '🧄', stockStatus: 'AMAN', stockQty: 30 },
+            { id: '33', name: 'Rokok Surya 12', price: 27000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '34', name: 'Rokok Surya 16', price: 37500, category: 'Rokok', icon: '🚬', stockStatus: 'MENIPIS', stockQty: 2 },
+            { id: '35', name: 'Dji Sam Soe Refill / Surya 23', price: 23000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 8 },
+            { id: '36', name: 'Sampoerna Mild', price: 37000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 12 },
+            { id: '37', name: 'Geo Mild', price: 26000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 6 },
+            { id: '38', name: 'LA Bold', price: 39000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '39', name: 'Camel', price: 20000, category: 'Rokok', icon: '🐫', stockStatus: 'AMAN', stockQty: 8 },
+            { id: '40', name: 'Kalang Baru / Djarum', price: 22000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 5 },
+            { id: '41', name: 'Sampoerna Kuning', price: 17000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '42', name: 'Marlboro', price: 41000, category: 'Rokok', icon: '🚬', stockStatus: 'HABIS', stockQty: 0 },
+            { id: '43', name: 'Dunhill', price: 33000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 7 },
+            { id: '44', name: 'Class Mild', price: 31000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 9 },
+            { id: '45', name: 'Dji Sam Soe Kuning', price: 21000, category: 'Rokok', icon: '🚬', stockStatus: 'AMAN', stockQty: 10 },
+            { id: '46', name: 'Aqua 1 Dus', price: 0, category: 'Minuman', icon: '📦', stockStatus: 'MENIPIS', stockQty: 1 },
+            { id: '47', name: 'Cleo', price: 0, category: 'Minuman', icon: '💧', stockStatus: 'AMAN', stockQty: 5 },
+            { id: '48', name: 'Nutrisari Sachet', price: 2000, category: 'Kopi & Sachet', icon: '🍊', stockStatus: 'AMAN', stockQty: 25 }
+        ];
+
+        let items = [];
+        let debtRecords = [];
+        let activeTab = 'items';
+        let debtFilter = 'ALL';
+        let deleteTargetId = null;
+
+        function initData() {
+            // Load items
+            const storedItems = localStorage.getItem('toko_manis_items');
+            if (storedItems) {
+                try {
+                    items = JSON.parse(storedItems);
+                } catch(e) {
+                    items = [...DEFAULT_ITEMS];
+                }
+            } else {
+                items = [...DEFAULT_ITEMS];
+                saveItemsToStorage();
+            }
+
+            // Load debt records
+            const storedDebts = localStorage.getItem('toko_manis_debts');
+            if (storedDebts) {
+                try {
+                    debtRecords = JSON.parse(storedDebts);
+                } catch(e) {
+                    debtRecords = [];
+                }
+            } else {
+                debtRecords = [];
+            }
+
+            updateBadges();
+            renderItems();
+            renderRestockList();
+            renderDebtRecords();
+        }
+
+        function saveItemsToStorage() {
+            localStorage.setItem('toko_manis_items', JSON.stringify(items));
+            updateBadges();
+        }
+
+        function saveDebtsToStorage() {
+            localStorage.setItem('toko_manis_debts', JSON.stringify(debtRecords));
+            updateBadges();
+            renderDebtRecords();
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            // Buttons UI
+            document.getElementById('tabItemsBtn').className = tabName === 'items' 
+                ? 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-choco-300 bg-choco-800 text-white shadow-sm flex items-center gap-2'
+                : 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-transparent text-choco-700 hover:bg-choco-200/50 flex items-center gap-2';
+
+            document.getElementById('tabRestockBtn').className = tabName === 'restock' 
+                ? 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-amber-400 bg-amber-500 text-white shadow-sm flex items-center gap-2'
+                : 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-transparent text-choco-700 hover:bg-choco-200/50 flex items-center gap-2';
+
+            document.getElementById('tabDebtBtn').className = tabName === 'debt' 
+                ? 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-choco-700 bg-choco-700 text-white shadow-sm flex items-center gap-2'
+                : 'px-5 py-2.5 rounded-t-2xl font-fredoka font-semibold text-sm transition-all border-2 border-b-0 border-transparent text-choco-700 hover:bg-choco-200/50 flex items-center gap-2';
+
+            // Section Displays
+            document.getElementById('sectionItems').classList.toggle('hidden', tabName !== 'items');
+            document.getElementById('sectionRestock').classList.toggle('hidden', tabName !== 'restock');
+            document.getElementById('sectionDebt').classList.toggle('hidden', tabName !== 'debt');
+
+            if(tabName === 'restock') renderRestockList();
+        }
+
+        function updateBadges() {
+            document.getElementById('tabBadgeItems').innerText = items.length;
+            
+            const restockCount = items.filter(i => i.stockStatus === 'MENIPIS' || i.stockStatus === 'HABIS').length;
+            document.getElementById('tabBadgeRestock').innerText = restockCount;
+            document.getElementById('restockTotalCount').innerText = restockCount;
+
+            const unpaidCount = debtRecords.filter(r => r.type === 'HUTANG' && !r.isPaid).length;
+            document.getElementById('tabBadgeDebt').innerText = unpaidCount;
+        }
+
+        // Render Product Cards
+        function renderItems(filteredList = null) {
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            const displayList = filteredList || items;
+
+            document.getElementById('itemCount').innerText = `${displayList.length} Barang`;
+            
+            if (displayList.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = displayList.map(item => {
+                const categoryIcon = item.icon || '📦';
+                const stockStatus = item.stockStatus || 'AMAN';
+                
+                let stockBadge = '';
+                if(stockStatus === 'MENIPIS') {
+                    stockBadge = `<span class="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">⚠️ Menipis (${item.stockQty ?? 0})</span>`;
+                } else if(stockStatus === 'HABIS') {
+                    stockBadge = `<span class="bg-red-100 text-red-700 border border-red-300 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">❌ Habis</span>`;
+                } else {
+                    stockBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-md">🟢 Stok: ${item.stockQty ?? 'Aman'}</span>`;
+                }
+
+                return `
+                <div class="bg-white border-2 border-choco-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-choco-400 transition flex flex-col justify-between relative group">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-2xl p-2 bg-choco-100 rounded-xl border border-choco-200">${categoryIcon}</span>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="text-[10px] font-bold text-choco-600 bg-choco-100 px-2 py-0.5 rounded-lg border border-choco-200">
+                                    ${item.category || 'Umum'}
+                                </span>
+                                ${stockBadge}
+                            </div>
+                        </div>
+
+                        <h3 class="font-bold text-choco-900 text-base leading-snug mb-2 font-fredoka">${escapeHtml(item.name)}</h3>
+                    </div>
+
+                    <div>
+                        <div class="my-2 pt-2 border-t border-choco-100 flex items-baseline justify-between">
+                            <span class="text-[11px] font-bold text-choco-400 uppercase tracking-wider">Harga:</span>
+                            <div class="text-base font-extrabold text-choco-800 font-fredoka">
+                                ${formatRupiah(item.price)}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 mt-3 pt-2 border-t border-choco-100/60">
+                            <button onclick="toggleQuickStock('${item.id}')" class="text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition flex items-center gap-1" title="Tandai Stok Menipis">
+                                <i class="fa-solid fa-box-open"></i> Restock?
+                            </button>
+                            <button onclick="openEditModal('${item.id}')" class="flex-1 bg-choco-100 hover:bg-choco-200 text-choco-800 text-xs font-bold py-1.5 rounded-xl transition flex items-center justify-center gap-1 border border-choco-300">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit
+                            </button>
+                            <button onclick="confirmDelete('${item.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-1.5 rounded-xl text-xs transition border border-red-200" title="Hapus">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle Quick Stock Status
+        function toggleQuickStock(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            if (item.stockStatus === 'AMAN') {
+                item.stockStatus = 'MENIPIS';
+            } else if (item.stockStatus === 'MENIPIS') {
+                item.stockStatus = 'HABIS';
+            } else {
+                item.stockStatus = 'AMAN';
+            }
+
+            saveItemsToStorage();
+            filterItems();
+            renderRestockList();
+            showToast(`Status stok "${item.name}" diubah!`, '📦');
+        }
+
+        // Render Restock List Tab
+        function renderRestockList() {
+            const grid = document.getElementById('restockListGrid');
+            const emptyState = document.getElementById('emptyRestockState');
+            const restockItems = items.filter(i => i.stockStatus === 'MENIPIS' || i.stockStatus === 'HABIS');
+
+            if (restockItems.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = restockItems.map(item => `
+                <div class="bg-white border-2 border-amber-300 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl p-2 bg-amber-50 rounded-2xl border border-amber-200">${item.icon || '📦'}</span>
+                        <div>
+                            <h4 class="font-bold text-choco-900 font-fredoka text-sm">${escapeHtml(item.name)}</h4>
+                            <p class="text-xs font-semibold text-choco-600">${formatRupiah(item.price)}</p>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${item.stockStatus === 'HABIS' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'} mt-1 inline-block">
+                                ${item.stockStatus === 'HABIS' ? '❌ HABIS' : `⚠️ MENIPIS (${item.stockQty ?? 0} sisa)`}
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="markStockAman('${item.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl transition shadow">
+                        ✅ Sudah Restock
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function markStockAman(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.stockStatus = 'AMAN';
+                item.stockQty = (item.stockQty || 0) + 10;
+                saveItemsToStorage();
+                filterItems();
+                renderRestockList();
+                showToast(`"${item.name}" kembali aman! ✅`, '🎉');
+            }
+        }
+
+        // --- DEBT & TITIPAN LOGIC ---
+        function setDebtFilter(filter) {
+            debtFilter = filter;
+            document.getElementById('debtFilterAll').className = filter === 'ALL' ? 'px-3 py-1 rounded-xl bg-choco-700 text-white font-bold' : 'px-3 py-1 rounded-xl bg-choco-200 text-choco-800 font-bold';
+            document.getElementById('debtFilterHutang').className = filter === 'HUTANG' ? 'px-3 py-1 rounded-xl bg-choco-700 text-white font-bold' : 'px-3 py-1 rounded-xl bg-choco-200 text-choco-800 font-bold';
+            document.getElementById('debtFilterTitipan').className = filter === 'TITIPAN' ? 'px-3 py-1 rounded-xl bg-choco-700 text-white font-bold' : 'px-3 py-1 rounded-xl bg-choco-200 text-choco-800 font-bold';
+            renderDebtRecords();
+        }
+
+        function renderDebtRecords() {
+            const list = document.getElementById('debtRecordList');
+            const emptyState = document.getElementById('emptyDebtState');
+            const search = document.getElementById('debtSearchInput').value.toLowerCase().trim();
+
+            let totalDebt = 0;
+            let unpaidPeople = 0;
+            let totalDeposit = 0;
+            let depositPeople = 0;
+
+            // Recalculate Totals
+            debtRecords.forEach(r => {
+                const numericAmount = typeof r.amount === 'number' ? r.amount : (parseInt(String(r.amount).replace(/\D/g, '')) || 0);
+                if (r.type === 'HUTANG' && !r.isPaid) {
+                    totalDebt += numericAmount;
+                    unpaidPeople++;
+                } else if (r.type === 'TITIPAN') {
+                    totalDeposit += numericAmount;
+                    depositPeople++;
+                }
+            });
+
+            document.getElementById('summaryTotalDebt').innerText = formatRupiah(totalDebt);
+            document.getElementById('summaryUnpaidCount').innerText = `${unpaidPeople} catatan belum lunas`;
+            document.getElementById('summaryTotalDeposit').innerText = formatRupiah(totalDeposit);
+            document.getElementById('summaryDepositCount').innerText = `${depositPeople} catatan titipan`;
+            
+            const netBalance = totalDeposit - totalDebt;
+            document.getElementById('summaryNetBalance').innerText = (netBalance >= 0 ? '+ ' : '') + formatRupiah(netBalance);
+
+            // Filter records for rendering
+            let filtered = debtRecords.filter(r => {
+                const matchesSearch = r.name.toLowerCase().includes(search) || 
+                                      (r.note && r.note.toLowerCase().includes(search)) ||
+                                      (r.author && r.author.toLowerCase().includes(search));
+                const matchesType = (debtFilter === 'ALL') || (r.type === debtFilter);
+                return matchesSearch && matchesType;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            list.innerHTML = filtered.map(r => {
+                const isHutang = r.type === 'HUTANG';
+                const displayAmount = (typeof r.amount === 'number' && r.amount > 0) 
+                    ? formatRupiah(r.amount) 
+                    : (r.amount ? escapeHtml(String(r.amount)) : '<span class="italic text-xs text-choco-400">Belum diisi</span>');
+
+                return `
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-choco-50/50 transition">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold ${isHutang ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}">
+                            ${isHutang ? '💸' : '💰'}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-choco-900 text-sm font-fredoka">${escapeHtml(r.name)}</h4>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isHutang ? (r.isPaid ? 'bg-gray-100 text-gray-600 border border-gray-300' : 'bg-red-100 text-red-700 border border-red-300') : 'bg-emerald-100 text-emerald-700 border border-emerald-300'}">
+                                    ${isHutang ? (r.isPaid ? '✅ LUNAS' : '⚠️ UNPAID') : 'TITIPAN'}
+                                </span>
+                            </div>
+                            <p class="text-xs text-choco-600 font-medium mt-0.5">${escapeHtml(r.note || 'Tidak ada catatan barang')}</p>
+                            <div class="flex items-center gap-2 text-[10px] text-choco-400 mt-1">
+                                <span>📅 ${r.date}</span>
+                                ${r.author ? `<span class="bg-choco-100 text-choco-800 font-bold px-1.5 py-0.5 rounded border border-choco-200">✍️ Pencatat: ${escapeHtml(r.author)}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-choco-100">
+                        <div class="text-right">
+                            <span class="text-[10px] text-choco-400 font-bold uppercase block">${isHutang ? 'Jumlah Hutang' : 'Uang Titipan'}</span>
+                            <span class="text-sm font-bold font-fredoka ${isHutang ? (r.isPaid ? 'line-through text-gray-400' : 'text-red-700') : 'text-emerald-700'}">
+                                ${displayAmount}
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            ${isHutang && !r.isPaid ? `
+                                <button onclick="togglePayDebt('${r.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow">
+                                    Lunas
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteDebtRecord('${r.id}')" class="text-choco-400 hover:text-red-600 p-1.5 rounded-lg text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function addDebtRecord(e) {
+            e.preventDefault();
+            const type = document.querySelector('input[name="recordType"]:checked').value;
+            const name = document.getElementById('recordName').value.trim();
+            const author = document.getElementById('recordAuthor').value.trim();
+            const note = document.getElementById('recordNote').value.trim();
+            const rawAmount = document.getElementById('recordAmount').value.trim();
+
+            let amountVal = rawAmount;
+            const parsedNum = parseInt(rawAmount.replace(/\D/g, ''));
+            if (!isNaN(parsedNum) && String(parsedNum).length === rawAmount.replace(/\D/g, '').length) {
+                amountVal = parsedNum;
+            }
+
+            const newRecord = {
+                id: Date.now().toString(),
+                type: type,
+                name: name,
+                author: author || 'Kasir',
+                note: note,
+                amount: amountVal,
+                isPaid: false,
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+            };
+
+            debtRecords.unshift(newRecord);
+            saveDebtsToStorage();
+            closeModal('addRecordModal');
+            document.getElementById('recordForm').reset();
+            showToast(`Catatan ${type === 'HUTANG' ? 'Hutang' : 'Titipan'} ditambahkan! 📝`, '✅');
+        }
+
+        function togglePayDebt(id) {
+            const record = debtRecords.find(r => r.id === id);
+            if (record) {
+                record.isPaid = true;
+                saveDebtsToStorage();
+                showToast(`Hutang ${record.name} ditandai Lunas! 🎉`, '✅');
+            }
+        }
+
+        function deleteDebtRecord(id) {
+            debtRecords = debtRecords.filter(r => r.id !== id);
+            saveDebtsToStorage();
+            showToast('Catatan dihapus! 🗑️', '👍');
+        }
+
+        // --- OVERRIDDEN & UPDATED EXISTING EDIT/ADD PRODUCT FUNCTIONS ---
+        function openEditModal(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('editId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCategory').value = item.category || 'Minuman';
+            document.getElementById('editStockStatus').value = item.stockStatus || 'AMAN';
+            document.getElementById('editStockQty').value = item.stockQty ?? 10;
+            document.getElementById('editPrice').value = item.price === 0 ? '' : item.price;
+
+            openModal('editModal');
+        }
+
+        function saveEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const stockStatus = document.getElementById('editStockStatus').value;
+            const stockQty = parseInt(document.getElementById('editStockQty').value) || 0;
+            const priceVal = document.getElementById('editPrice').value;
+            const price = priceVal === '' ? 0 : parseInt(priceVal);
+
+            const index = items.findIndex(i => i.id === id);
+            if (index !== -1) {
+                items[index].name = name;
+                items[index].category = category;
+                items[index].stockStatus = stockStatus;
+                items[index].stockQty = stockQty;
+                items[index].price = price;
+                
+                if (category === 'Minuman') items[index].icon = '🧃';
+                else if (category === 'Kopi & Sachet') items[index].icon = '☕';
+                else if (category === 'Makanan & Bumbu') items[index].icon = '🍜';
+                else if (category === 'Rokok') items[index].icon = '🚬';
+
+                saveItemsToStorage();
+                filterItems();
+                renderRestockList();
+                closeModal('editModal');
+                showToast(`Perubahan "${name}" tersimpan! ✏️`, '✅');
+            }
+        }
+
+        function addNewItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('addName').value.trim();
+            const category = document.getElementById('addCategory').value;
+            const stockStatus = document.getElementById('addStockStatus').value;
+            const stockQty = parseInt(document.getElementById('addStockQty').value) || 0;
+            const priceVal = document.getElementById('addPrice').value;
+            const price = priceVal === '' ? 0 : parseInt(priceVal);
+
+            let icon = '📦';
+            if (category === 'Minuman') icon = '🧃';
+            else if (category === 'Kopi & Sachet') icon = '☕';
+            else if (category === 'Makanan & Bumbu') icon = '🍜';
+            else if (category === 'Rokok') icon = '🚬';
+
+            const newItem = {
+                id: Date.now().toString(),
+                name: name,
+                price: price,
+                category: category,
+                stockStatus: stockStatus,
+                stockQty: stockQty,
+                icon: icon
+            };
+
+            items.unshift(newItem);
+            saveItemsToStorage();
+            filterItems();
+            renderRestockList();
+            closeModal('addModal');
+            document.getElementById('addForm').reset();
+            showToast(`"${name}" berhasil ditambahkan! 🥳`, '🎉');
+        }
+
+        function toggleRecordTypeLabel() {
+            // Helper function for modal state styling
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('toko_manis_items', JSON.stringify(items));
+        }
+
+        // Format Currency
+        function formatRupiah(number) {
+            if (number === 0 || number === null || number === undefined) {
+                return '<span class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-md border border-amber-300">Belum Ada Harga</span>';
+            }
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        // Mascot Greetings Array
+        const mascotQuotes = [
+            "Halo bosku! Mau cek harga barang apa hari ini? 🐻",
+            "Toko Manis selalu siap bantu catat harga! ✨",
+            "Harga barang naik atau turun? Jangan lupa update ya! 📝",
+            "Gunakan pencarian di atas untuk nemuin barang lebih cepat! 🔍"
+        ];
+
+        function triggerMascotQuote() {
+            const bubble = document.getElementById('mascotBubble');
+            const mascotText = document.getElementById('mascotText');
+            const randomQuote = mascotQuotes[Math.floor(Math.random() * mascotQuotes.length)];
+            mascotText.innerText = randomQuote;
+            bubble.classList.remove('hidden');
+        }
+
+        function closeMascotBubble() {
+            document.getElementById('mascotBubble').classList.add('hidden');
+        }
+
+        // Render Items to Grid
+        function renderItems(filteredList = null) {
+            const grid = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+            const displayList = filteredList || items;
+
+            document.getElementById('itemCount').innerText = `${displayList.length} Barang`;
+            
+            if (displayList.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = displayList.map(item => {
+                const isNoPrice = !item.price || item.price === 0;
+                
+                // Get appropriate emoji category if icon missing
+                let categoryIcon = item.icon || '📦';
+
+                return `
+                <div class="bg-white border-2 border-choco-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-choco-400 transition flex flex-col justify-between relative group">
+                    <div>
+                        <!-- Header Card -->
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <span class="text-2xl p-2 bg-choco-100 rounded-xl border border-choco-200">${categoryIcon}</span>
+                            <span class="text-[10px] font-bold text-choco-600 bg-choco-100 px-2 py-1 rounded-lg border border-choco-200">
+                                ${item.category || 'Umum'}
+                            </span>
+                        </div>
+
+                        <!-- Product Name -->
+                        <h3 class="font-bold text-choco-900 text-base leading-snug mb-2 font-fredoka">${escapeHtml(item.name)}</h3>
+                    </div>
+
+                    <div>
+                        <!-- Price Tag -->
+                        <div class="my-2 pt-2 border-t border-choco-100 flex items-baseline justify-between">
+                            <span class="text-[11px] font-bold text-choco-400 uppercase tracking-wider">Harga:</span>
+                            <div class="text-base font-extrabold text-choco-800 font-fredoka">
+                                ${formatRupiah(item.price)}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-1.5 mt-3 pt-2">
+                            <button onclick="openEditModal('${item.id}')" class="flex-1 bg-choco-100 hover:bg-choco-200 text-choco-800 text-xs font-bold py-2 rounded-xl transition flex items-center justify-center gap-1 border border-choco-300">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit
+                            </button>
+                            <button onclick="confirmDelete('${item.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-xl text-xs transition border border-red-200" title="Hapus">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Filter Logic
+        function filterItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            const filtered = items.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query);
+                const matchesCategory = (category === 'ALL') || (item.category === category);
+                return matchesSearch && matchesCategory;
+            });
+
+            const filterStatus = document.getElementById('filterStatus');
+            if (query || category !== 'ALL') {
+                filterStatus.innerText = `(Hasil Filter)`;
+            } else {
+                filterStatus.innerText = '';
+            }
+
+            renderItems(filtered);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filterItems();
+        }
+
+        // Add Item
+        function addNewItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('addName').value.trim();
+            const category = document.getElementById('addCategory').value;
+            const priceVal = document.getElementById('addPrice').value;
+            const price = priceVal === '' ? 0 : parseInt(priceVal);
+
+            // Icon assignment based on category
+            let icon = '📦';
+            if (category === 'Minuman') icon = '🧃';
+            else if (category === 'Kopi & Sachet') icon = '☕';
+            else if (category === 'Makanan & Bumbu') icon = '🍜';
+            else if (category === 'Rokok') icon = '🚬';
+
+            const newItem = {
+                id: Date.now().toString(),
+                name: name,
+                price: price,
+                category: category,
+                icon: icon
+            };
+
+            items.unshift(newItem);
+            saveToStorage();
+            filterItems();
+            closeModal('addModal');
+            document.getElementById('addForm').reset();
+            showToast(`"${name}" berhasil ditambahkan! 🥳`, '🎉');
+        }
+
+        // Edit Item Modal
+        function openEditModal(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('editId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCategory').value = item.category || 'Minuman';
+            document.getElementById('editPrice').value = item.price === 0 ? '' : item.price;
+
+            openModal('editModal');
+        }
+
+        function saveEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const priceVal = document.getElementById('editPrice').value;
+            const price = priceVal === '' ? 0 : parseInt(priceVal);
+
+            const index = items.findIndex(i => i.id === id);
+            if (index !== -1) {
+                items[index].name = name;
+                items[index].category = category;
+                items[index].price = price;
+                
+                // Update icon if category changed
+                if (category === 'Minuman') items[index].icon = '🧃';
+                else if (category === 'Kopi & Sachet') items[index].icon = '☕';
+                else if (category === 'Makanan & Bumbu') items[index].icon = '🍜';
+                else if (category === 'Rokok') items[index].icon = '🚬';
+
+                saveToStorage();
+                filterItems();
+                closeModal('editModal');
+                showToast(`Perubahan "${name}" tersimpan! ✏️`, '✅');
+            }
+        }
+
+        // Delete Logic
+        function confirmDelete(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            deleteTargetId = id;
+            document.getElementById('deleteTargetName').innerText = `Yakin ingin menghapus "${item.name}"?`;
+            
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                deleteItem(deleteTargetId);
+            };
+
+            openModal('deleteModal');
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            saveToStorage();
+            filterItems();
+            closeModal('deleteModal');
+            showToast('Barang berhasil dihapus 🗑️', '👍');
+        }
+
+        // Reset Data
+        function confirmResetData() {
+            if (window.confirm("Apakah kamu yakin ingin mengembalikan seluruh daftar barang ke daftar awal? Perubahan harga yang kamu buat akan di-reset.")) {
+                items = [...DEFAULT_ITEMS];
+                saveToStorage();
+                filterItems();
+                showToast('Daftar barang kembali ke awal! 🔄', '✨');
+            }
+        }
+
+        // Modal Utilities
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Toast Utility
+        function showToast(message, icon = '✨') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            document.getElementById('toastIcon').innerText = icon;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Helper Escape HTML
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize App
+        window.onload = function() {
+            initData();
+        }
+    </script>
+</body>
+</html>
